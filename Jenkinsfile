@@ -1,7 +1,7 @@
 node {
-    stage('First Stage')
+    stage('Checkout')
     {
-        echo "Yo"
+        git "https://github.com/makstaras/HWAdvancedSeleniumPt1.git"
     }
     
     stage('Second Stage')

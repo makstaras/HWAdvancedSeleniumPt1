@@ -24,16 +24,30 @@ node('master') {
         bat '"C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/MSBuild/15.0/Bin/MSBuild.exe" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln'
     }
 	
-	catchError
-	{
-		isFailed = true
-		stage('Run Tests')
-		{
-			bat '"C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/HWAdvancedSeleniumPt1.dll'
-		}
-		isFailed = false
-	}
 	
+}
+
+catchError
+{
+	isFailed = true
+	stage('Run Tests')
+	{
+		parallel FirstTest:{
+			node('master'){
+				bat '"C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/HWAdvancedSeleniumPt1.dll --where cat==fake'
+			}
+		}, SecondTest: {
+			node('Slave'){
+				bat '"C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/HWAdvancedSeleniumPt1.dll --where cat==good'
+			}
+		}
+		
+	}
+	isFailed = false
+}
+
+node('master')
+{
 	stage('Reporting')
     {
        

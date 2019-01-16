@@ -4,8 +4,8 @@ node('master') {
         git "https://github.com/makstaras/HWAdvancedSeleniumPt1.git"
     }
     
-    stage('Second Stage')
+    stage('Restore NuGet Stage')
     {
-        echo "Second Yo"
+        bat '"C:\\nuget.exe" restore HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln'
     }
 }

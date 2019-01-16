@@ -1,3 +1,5 @@
+def isFailed = false
+
 node('master') {
     stage('Checkout')
     {
@@ -14,8 +16,23 @@ node('master') {
         bat '"C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/MSBuild/15.0/Bin/MSBuild.exe" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln'
     }
 	
-	stage('Run Tests')
+	catchError
+	{
+		isFailed = true
+		stage('Run Tests')
+		{
+			bat '"C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/HWAdvancedSeleniumPt1.dll'
+		}
+		isFailed = false
+	}
+	
+	stage('Reporting')
     {
-        bat '"C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console" HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/HWAdvancedSeleniumPt1.dll'
+        isFailed()
+		{
+		}
+		else
+		{
+		}
     }
 }

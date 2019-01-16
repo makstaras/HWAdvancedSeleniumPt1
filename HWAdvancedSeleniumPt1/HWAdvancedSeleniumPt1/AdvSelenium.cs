@@ -38,7 +38,13 @@ namespace HWAdvancedSeleniumPt1
             driver.Quit();
         }
 
-        [Test]
+        [Test, Category("fake")]
+        public void FakeTest()
+        {
+            Assert.True(true);
+        }
+
+        [Test, Category("good")]
         public void TakeScreenShotOnLeafground()
         {
             driver.Navigate().GoToUrl($"http://www.leafground.com/home.html");
@@ -70,7 +76,7 @@ namespace HWAdvancedSeleniumPt1
             driver.SwitchTo().Window(driver.WindowHandles[0]);
         }
 
-        [Test]
+        [Test, Category("good")]
         public void UsingFrameAndDragDrop()
         {
             driver.Navigate().GoToUrl($"https://jqueryui.com/demos/");

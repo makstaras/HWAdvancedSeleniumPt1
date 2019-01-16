@@ -9,6 +9,18 @@ def branch = params.branchName
 def buildArtifactsFolder = "C:/consoleRunner/BuildPackagesFromPipeline/$BUILD_ID"
 currentBuild.description = "Branch: $branch"
 
+def RunUnitTests(String pathToDll, String condition, String reportName)
+{
+	try
+	{
+		bat "C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console.exe $pathToDll $condition --result=$reportName"
+	}
+	finally
+	{
+		stash name: reportName, includes: reportName
+	}
+}
+
 node('master') {
     stage('Checkout')
     {
@@ -39,11 +51,11 @@ catchError
 	{
 		parallel FirstTest:{
 			node('master'){
-				bat "C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console.exe $buildArtifactsFolder/HWAdvancedSeleniumPt1.dll --where cat==fake"
+				RunUnitTests("$buildArtifactsFolder/HWAdvancedSeleniumPt1.dll", "--where cat==fake", "TestResult1.xml")
 			}
 		}, SecondTest: {
 			node('Slave'){
-				bat "C:/consoleRunner/NUnit.Console-3.9.0/nunit3-console.exe $buildArtifactsFolder/HWAdvancedSeleniumPt1.dll --where cat==good"
+				RunUnitTests("$buildArtifactsFolder/HWAdvancedSeleniumPt1.dll", "--where cat==good", "TestResult2.xml")
 			}
 		}
 		
@@ -55,6 +67,11 @@ node('master')
 {
 	stage('Reporting')
     {
-       
+		unstash "TestResult1.xml"
+		unstash "TestResult2.xml"
+		
+		archiveArtifacts '*.xml'
+		nunit testResultPattern: 'TestResult1.xml, TestResult2.xml'
+		
     }
 }

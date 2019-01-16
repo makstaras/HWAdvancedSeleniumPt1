@@ -28,11 +28,6 @@ node('master') {
 	
 	stage('Reporting')
     {
-        isFailed()
-		{
-		}
-		else
-		{
-		}
+       
     }
 }

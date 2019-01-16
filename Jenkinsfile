@@ -11,7 +11,7 @@ currentBuild.description = "Branch: $branch"
 node('master') {
     stage('Checkout')
     {
-        git "https://github.com/makstaras/HWAdvancedSeleniumPt1.git"
+        git branch: branch, url: "https://github.com/makstaras/HWAdvancedSeleniumPt1.git"
     }
     
     stage('Restore NuGet Stage')

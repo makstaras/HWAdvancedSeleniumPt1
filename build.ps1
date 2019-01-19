@@ -63,11 +63,15 @@ Function CopyBuildArtifacts()
     param
     (
         [Parameter(Mandatory)]
-        [String] $SourceFolder,
+        [String] $SourceFolder="HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug",
         [Parameter(Mandatory)]
-        [String] $DestinationFolder
+        [String] $DestinationFolder="C:/consoleRunner/BuildPackagesFromPipeline/$BUILD_ID"
     )
 
+	Write-Output "Copying items into $DestinationFolder..."
+	& Test-Path "HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug"
+	& Get-ChildItem $SourceFolder | Copy-Item $DestinationFolder
+	
     # Copy all files from $SourceFolder to $DestinationFolder
     #
     # Useful commands:

@@ -30,8 +30,7 @@ node('master') {
     stage('Restore NuGet Stage')
     {
         powershell ".\\build.ps1 RestoreNuGetPackages"
-		bat '"C:/nuget.exe" restore HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln'
-    }
+	}
 	
 	stage('Build Solution')
     {

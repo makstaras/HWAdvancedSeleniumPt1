@@ -39,7 +39,9 @@ node('master') {
 	
 	stage('Copy Artifacts')
 	{
-		bat "(robocopy HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug $buildArtifactsFolder /MIR /XO) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+		powershell ".\\build.ps1 CopyArtifacts -BuildArtifactsFolder $buildArtifactsFolder"
+		
+		#bat "(robocopy HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug $buildArtifactsFolder /MIR /XO) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 		
 	}
 }

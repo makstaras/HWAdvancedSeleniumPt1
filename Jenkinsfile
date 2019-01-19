@@ -29,7 +29,8 @@ node('master') {
     
     stage('Restore NuGet Stage')
     {
-        bat '"C:/nuget.exe" restore HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln'
+        powershell ".\\build.ps1 RestoreNuGetPackages"
+		bat '"C:/nuget.exe" restore HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln'
     }
 	
 	stage('Build Solution')
@@ -39,9 +40,7 @@ node('master') {
 	
 	stage('Copy Artifacts')
 	{
-		powershell ".\\build.ps1 CopyArtifacts -BuildArtifactsFolder $buildArtifactsFolder"
-		
-		#bat "(robocopy HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug $buildArtifactsFolder /MIR /XO) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
+		bat "(robocopy HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug $buildArtifactsFolder /MIR /XO) ^& IF %ERRORLEVEL% LEQ 1 exit 0"
 		
 	}
 }

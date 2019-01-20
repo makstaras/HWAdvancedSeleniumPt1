@@ -52,17 +52,29 @@ Function CopyBuildArtifacts()
     )
 
 	Write-Output "Copying items into $DestinationFolder..."
+	$error.clear()
 	if (& Test-Path $DestinationFolder)
 	{
-		Write-Output "removing"
 		& Remove-Item $DestinationFolder
+		if($error)
+		{
+			Throw "An error occured while destination folder removing"
+		}
 	}
-	Write-Output "creation"
+	
 	& new-item -path "C:/consoleRunner/BuildPackagesFromPipeline/" -name "new" -type directory
-	Write-Output "reviewing"
+	if($error)
+	{
+	    Throw "An error occured while destination folder creation"
+	}
+	
 	& Get-ChildItem $SourceFolder 
-	Write-Output "destination"
+	
 	& Copy-Item $SourceFolder -destination $DestinationFolder
+	if($error)
+    {
+        Throw "An error occured while copying fields to destination folder"
+    }
 }
 
 foreach ($Task in $TaskList) {

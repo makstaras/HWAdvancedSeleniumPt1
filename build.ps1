@@ -4,32 +4,18 @@ param
 (
     [Parameter()]
     [String[]] $TaskList = @("RestorePackages", "Build", "CopyArtifacts"),
-    
-	# Also add following parameters: 
-    #   Configuration
-    #   Platform
-    #   OutputPath
-    # And use these parameters inside BuildSolution function while calling for MSBuild.
-    # Use /p swith to pass the parameter. For example:
-    #   MSBuild.exe src/Solution.sln /p:Configuration=$Configuration
-    # More info here: https://docs.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-properties?view=vs-2017
-	
-	
-	
-	[String] $OutputPath,
-	
-	[String] $Platform,
-    
-	
-    [String] $BuildArtifactsFolder = "C:/consoleRunner/BuildPackagesFromPipeline/$BUILD_ID",
-
+   
+	[String] $OutputPath="HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/",	
+	[String] $Platform="Any CPU",
 	[Parameter(Mandatory)]
-	[String] $Configuration = "Debug"
+    [String] $Configuration = "Debug",
+	
+    [String] $BuildArtifactsFolder = "C:/consoleRunner/BuildPackagesFromPipeline/$BUILD_ID"
 )
 
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 $NugetExe = Join-Path $PSScriptRoot "nuget.exe"
-# Define additional variables here (MSBuild path, etc.)
+
 $MSBuild = "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/MSBuild/15.0/Bin/MSBuild.exe"
 $Solution = "HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln"
 
@@ -46,16 +32,13 @@ Function RestoreNuGetPackages()
 {
     DownloadNuGet
     Write-Output 'Restoring NuGet packages...'
-    # NuGet.exe call here
 	& $NugetExe
 }
 
 Function BuildSolution()
 {
     Write-Output "Building '$Solution' solution..."
-    # MSBuild.exe call here
-	& $MSBuild $Solution
-	#$MSBuild HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1.sln /p:Configuration=$Configuration
+	& $MSBuild $Solution /p:Configuration=$Configuration /p:Platform=$Platform /p:OutputPath=$OutputPath
 }
 
 Function CopyBuildArtifacts()
@@ -63,28 +46,23 @@ Function CopyBuildArtifacts()
     param
     (
         [Parameter(Mandatory)]
-        [String] $SourceFolder="HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug",
+        [String] $SourceFolder,
         [Parameter(Mandatory)]
-        [String] $DestinationFolder="C:/consoleRunner/BuildPackagesFromPipeline/$BUILD_ID"
+        [String] $DestinationFolder
     )
 
 	Write-Output "Copying items into $DestinationFolder..."
-	& Test-Path "HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug"
-	& Get-ChildItem $SourceFolder | Copy-Item $DestinationFolder
-	
-    # Copy all files from $SourceFolder to $DestinationFolder
-    #
-    # Useful commands:
-    #   Test-Path - check if path exists
-    #   Remove-Item - remove folders/files
-    #   New-Item - create folder/file
-    #   Get-ChildItem - gets items from specified path
-    #   Copy-Item - copies item into destination folder
-    #
-    #     NOTE: you can chain methods using pipe (|) symbol. For example:
-    #           Get-ChildItem ... | Copy-Item ...
-    #
-    #           which will get items (Get-ChildItem) and will copy them (Copy-Item) to the target folder
+	if (& Test-Path $DestinationFolder)
+	{
+		Write-Output "removing"
+		& Remove-Item $DestinationFolder
+	}
+	Write-Output "creation"
+	& new-item -path "C:/consoleRunner/BuildPackagesFromPipeline/" -name "new" -type directory
+	Write-Output "reviewing"
+	& Get-ChildItem $SourceFolder 
+	Write-Output "destination"
+	& Copy-Item $SourceFolder -destination $DestinationFolder
 }
 
 foreach ($Task in $TaskList) {
@@ -98,6 +76,6 @@ foreach ($Task in $TaskList) {
     }
     if ($Task.ToLower() -eq 'copyartifacts')
     {
-        CopyBuildArtifacts "YOUR FOLDER WITH BUILT DLLS" "$BuildArtifactsFolder"
+        CopyBuildArtifacts "HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/*.*" "C:/consoleRunner/BuildPackagesFromPipeline/new/"
     }
 }

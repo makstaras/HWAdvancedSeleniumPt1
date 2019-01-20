@@ -51,6 +51,7 @@ Function CopyBuildArtifacts()
         [String] $DestinationFolder
     )
 
+	
 	Write-Output "Copying items into $DestinationFolder..."
 	$error.clear()
 	if (& Test-Path $DestinationFolder)
@@ -65,29 +66,40 @@ Function CopyBuildArtifacts()
 	& new-item -path "C:/consoleRunner/BuildPackagesFromPipeline/" -name "new" -type directory
 	if($error)
 	{
-	    Throw "An error occured while destination folder creation"
+		Throw "An error occured while destination folder creation"
 	}
-	
+		
 	& Get-ChildItem $SourceFolder 
-	
+	if($error)
+	{
+		Throw "An error occured while getting files from $SourceFolder"
+	}
+		
 	& Copy-Item $SourceFolder -destination $DestinationFolder
 	if($error)
-    {
-        Throw "An error occured while copying fields to destination folder"
-    }
+	{
+		Throw "An error occured while copying fields to destination folder"
+	}
 }
 
 foreach ($Task in $TaskList) {
-    if ($Task.ToLower() -eq 'restorepackages')
-    {
-        RestoreNuGetPackages
-    }
-    if ($Task.ToLower() -eq 'build')
-    {
-        BuildSolution
-    }
-    if ($Task.ToLower() -eq 'copyartifacts')
-    {
-        CopyBuildArtifacts "HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/*.*" "C:/consoleRunner/BuildPackagesFromPipeline/new/"
-    }
+	try{
+		if ($Task.ToLower() -eq 'restorepackages')
+		{
+			RestoreNuGetPackages
+		}
+		if ($Task.ToLower() -eq 'build')
+		{
+			BuildSolution
+		}
+		if ($Task.ToLower() -eq 'copyartifacts')
+		{
+			CopyBuildArtifacts "HWAdvancedSeleniumPt1/HWAdvancedSeleniumPt1/bin/Debug/*.*" "C:/consoleRunner/BuildPackagesFromPipeline/new/"
+		}
+	}
+	catch 
+	{
+		Write-Output "Error was faced. I'm closing the work"
+		exit 1
+	}
 }

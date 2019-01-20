@@ -51,11 +51,11 @@ catchError
 	{
 		parallel FirstTest:{
 			node('master'){
-				RunUnitTests("$buildArtifactsFolder/HWAdvancedSeleniumPt1.dll", "--where cat==fake", "TestResult1.xml")
+				RunUnitTests("C:/consoleRunner/BuildPackagesFromPipeline/new/HWAdvancedSeleniumPt1.dll", "--where cat==fake", "TestResult1.xml")
 			}
 		}, SecondTest: {
 			node('Slave'){
-				RunUnitTests("$buildArtifactsFolder/HWAdvancedSeleniumPt1.dll", "--where cat==good", "TestResult2.xml")
+				RunUnitTests("C:/consoleRunner/BuildPackagesFromPipeline/new/HWAdvancedSeleniumPt1.dll", "--where cat==good", "TestResult2.xml")
 			}
 		}
 		
